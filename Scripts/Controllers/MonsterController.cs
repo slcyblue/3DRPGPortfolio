@@ -7,7 +7,6 @@ using UnityEngine.AI;
 public class MonsterController : BaseController
 {
 	Stat _stat;
-	Item _item;
 
 	[SerializeField]
 	float _scanRange = 10;

@@ -10,6 +10,7 @@ public class Define
         Player,
         Monster,
         Npc,
+        Boss,
     }
 
 	public enum State

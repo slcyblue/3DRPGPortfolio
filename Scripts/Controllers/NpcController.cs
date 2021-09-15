@@ -70,14 +70,14 @@ public class NpcController : BaseController{
         enhanceUI.gameObject.SetActive(true);
     }
 
-    private void OnCollisionEnter(Collision other) {
-        if(other.gameObject.tag == "Player"){
+    private void OnTriggerEnter(Collider other) {
+        if(other.CompareTag("Player")){
             playerIsNear = true;
         }
     }
 
-    private void OnCollisionExit(Collision other) {
-        if(other.gameObject.tag=="Player"){
+    private void OnTriggerExit(Collider other) {
+        if(other.CompareTag("Player")){
             playerIsNear = false;
         }
     }

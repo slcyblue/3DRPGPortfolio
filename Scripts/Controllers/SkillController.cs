@@ -61,7 +61,8 @@ public class SkillController : MonoBehaviour
             if (distance <= skill.skillRange)
             {
                 Stat targetStat = monster.GetComponent<Stat>();
-                targetStat.OnSkilled(gameObject, skill);
+                PlayerStat playerStat = player.GetComponent<PlayerStat>();
+                targetStat.OnSkilled(gameObject, skill.skillDmg * playerStat.Attack * 0.5f);
             }
         }
         Managers.Game.GetPlayer().GetComponent<PlayerController>().State = Define.State.Idle;

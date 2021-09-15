@@ -34,7 +34,7 @@ public class UI_NamePlate : UI_Base
             float ratio = _stat.Hp / (float)_stat.MaxHp;
             SetHpRatio(ratio);
             Get<GameObject>((int)GameObjects.TargetName).GetComponent<Text>().text = _bc._lockTarget.name;
-            Get<GameObject>((int)GameObjects.TargetHp).GetComponent<Text>().text = $"{_stat.Hp}/{_stat.MaxHp} ({ratio*100}%)";
+            Get<GameObject>((int)GameObjects.TargetHp).GetComponent<Text>().text = $"{_stat.Hp}/{_stat.MaxHp} ({ratio.ToString("0%")}%)";
                 
             if(_stat.Hp <= 0)
                 Plate.SetActive(false);

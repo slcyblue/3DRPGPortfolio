@@ -36,11 +36,11 @@ public class LoadingScene : MonoBehaviour
 
             if(op.progress < 0.9f){
                 progressBar.value = op.progress;
-                progressText.text = op.progress.ToString() + "%";
+                progressText.text = op.progress.ToString("0%");
             }else{
                 timer += Time.unscaledDeltaTime;
                 progressBar.value = Mathf.Lerp(0.9f,1f,timer);
-                progressText.text = (Mathf.Lerp(0.9f,1f,timer)*100).ToString() + "%";
+                progressText.text = Mathf.Lerp(0.9f,1f,timer).ToString("0%");
                 if(progressBar.value>=1f){
                     op.allowSceneActivation = true;
                     yield break;

@@ -50,9 +50,9 @@ public class Stat : MonoBehaviour
         Managers.Game.Despawn(gameObject);
     }
 
-    public virtual void OnSkilled(GameObject attacker, Skill skill)
+    public virtual void OnSkilled(GameObject attacker, float skillDmg)
     {
-		int damage = Mathf.Max(0, skill.skillDmg - Defense);
+		int damage = Mathf.Max(0, (int)skillDmg - Defense);
 		Hp -= damage;
         if (Hp <= 0)
         {

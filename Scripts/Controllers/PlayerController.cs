@@ -21,6 +21,7 @@ public class PlayerController : BaseController
     UI_Inven invenUI;
     UI_Status statusUI;
     UI_SkillList skillUI;
+    UI_Menu menuUI;
 
     public override void Init(int playerId)
     {
@@ -31,6 +32,7 @@ public class PlayerController : BaseController
         invenUI = Util.FindGameSceneChild("UI_Inven", true).GetComponent<UI_Inven>();
         statusUI = Util.FindGameSceneChild("UI_Status", true).GetComponent<UI_Status>();
         skillUI = Util.FindGameSceneChild("UI_SkillList", true).GetComponent<UI_SkillList>();
+        menuUI = Util.FindGameSceneChild("UI_Menu", true).GetComponent<UI_Menu>();
 		
         Managers.Input.MouseAction -= OnMouseEvent;
         Managers.Input.MouseAction += OnMouseEvent;
@@ -350,6 +352,27 @@ public class PlayerController : BaseController
                 else{
                     skillUI.gameObject.SetActive(false);
                     _stopMoving = false;
+                }
+            }else if(Input.GetKey(KeyCode.Escape)){
+                GameObject gameUI = GameObject.Find("@UI_Root/UI_GameScene");
+                bool checkUIActive = false;
+                for(int i = 5; i<0;i--){
+                    if(gameUI.transform.GetChild(i).gameObject.activeSelf == true){
+                        gameUI.transform.GetChild(i).gameObject.SetActive(false);
+                        checkUIActive = true;
+                        break;
+                    }
+                }
+
+                if(!checkUIActive){
+                    if(_lockTarget != null){
+                        _lockTarget = null;
+                    }else{
+                        if(menuUI.gameObject.activeSelf==false){
+                            menuUI.transform.SetAsLastSibling();
+                            menuUI.gameObject.SetActive(true);
+                        }
+                    }
                 }
             }
         }

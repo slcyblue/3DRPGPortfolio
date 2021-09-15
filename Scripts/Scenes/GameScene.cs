@@ -23,7 +23,8 @@ public class GameScene : BaseScene
         Camera.main.gameObject.GetOrAddComponent<CameraController>().SetPlayer(player);
         Managers.Game.Spawn(Define.WorldObject.Npc, 500);
         Managers.Game.Spawn(Define.WorldObject.Npc, 502);
-        //Managers.Game.Spawn(Define.WorldObject.Monster, "Knight");
+        GameObject slayer = Managers.Game.Spawn(Define.WorldObject.Monster, 410);
+        slayer.transform.position = Vector3.zero;
         
         Managers.UI.ShowSceneUI<UI_SkillPlate>();
         Managers.UI.ShowSceneUI<UI_BuffPlate>();

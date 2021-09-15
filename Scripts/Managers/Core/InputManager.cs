@@ -150,7 +150,7 @@ public class InputManager
                 _pressedKey = false;
                 _pressedKeyTime = 0;
             }
-        }if(Input.GetKeyDown(KeyCode.K)){
+            if(Input.GetKeyDown(KeyCode.K)){
                 if (!_pressedKey){
                     {
                         KeyAction.Invoke(Define.KeyEvent.KeyDown);
@@ -171,6 +171,28 @@ public class InputManager
                 _pressedKey = false;
                 _pressedKeyTime = 0;
             }
+            if(Input.GetKeyDown(KeyCode.Escape)){
+                if (!_pressedKey){
+                    {
+                        KeyAction.Invoke(Define.KeyEvent.KeyDown);
+                        _pressedKeyTime = Time.time;
+                    }
+                    KeyAction.Invoke(Define.KeyEvent.Press);
+                    _pressedKey = true;
+                }
+            }
+            else
+            {
+                if (_pressedKey)
+                {
+                    if (Time.time < _pressedKeyTime + 0.2f)
+                        KeyAction.Invoke(Define.KeyEvent.Click);
+                    KeyAction.Invoke(Define.KeyEvent.KeyUp);
+                }
+                _pressedKey = false;
+                _pressedKeyTime = 0;
+            }
+        }
 
         if (MouseAction != null)
         {

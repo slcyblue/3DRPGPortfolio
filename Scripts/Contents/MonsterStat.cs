@@ -15,13 +15,20 @@ public class MonsterStat : Stat
 	Data.MonsterData _monsterData;
 	Data.Item _itemData;
 	MonsterController mc = null;
+	BossController bc = null;
 	int _monsterId;
 
 
 	public override void Init(){
-		mc = gameObject.GetComponent<MonsterController>();
-		_monsterId = mc._Id;
-		_defense = 5;
+		if(gameObject.GetComponent<BaseController>().WorldObjectType == Define.WorldObject.Monster){
+			mc = gameObject.GetComponent<MonsterController>();
+			_monsterId = mc._Id;
+			_defense = 5;
+		}else if(gameObject.GetComponent<BaseController>().WorldObjectType == Define.WorldObject.Boss){
+			bc = gameObject.GetComponent<BossController>();
+			_monsterId =  bc._Id;
+			_defense = 15;
+		}
 
 		SetStat(_monsterId);
 	}
