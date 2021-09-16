@@ -29,7 +29,8 @@ public class NpcController : BaseController{
     protected override void UpdateIdle() {
         if(playerIsNear)
             transform.LookAt(player.transform);
-        else if(player != null && (player.transform.position - transform.position).magnitude > 3){
+
+        if(player != null && (player.transform.position - transform.position).magnitude > 3){
             if(enhanceUI.gameObject.activeSelf == true){  
                 if(enhanceUI.transform.GetChild(0).GetComponent<UI_Enhance_Item>()._iconImage != null){ //등록된 아이템이 있을 경우
                     Item enhanceItem = enhanceUI.transform.GetChild(0).GetComponent<UI_Enhance_Item>()._itemData;

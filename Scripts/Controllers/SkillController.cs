@@ -12,33 +12,37 @@ public class SkillController : MonoBehaviour
     static public bool EcoolDown;
     static public bool RcoolDown;
 
-    Coroutine _coDruation;
+    static GameObject player;
+
+    private void Start() {
+        player = Managers.Game.GetPlayer();
+    }
 
     public static void StartQSkill()
     {
         Skill QSkill = Managers.Skill.Find(skill => (skill.skillSlot == 0));
-        _animator = Managers.Game.GetPlayer().GetComponent<Animator>();
+        _animator = player.GetComponent<Animator>();
         if (QSkill != null)
             _animator.CrossFade($"{QSkill.skillName}", 0.1f, -1, 0);
     }
     public static void StartWSkill()
     {
         Skill WSkill = Managers.Skill.Find(skill => (skill.skillSlot == 1));
-        _animator = Managers.Game.GetPlayer().GetComponent<Animator>();
+        _animator = player.GetComponent<Animator>();
         if (WSkill != null)
             _animator.CrossFade($"{WSkill.skillName}", 0.1f, -1, 0);
     }
     public static void StartESkill()
     {
         Skill ESkill = Managers.Skill.Find(skill => (skill.skillSlot == 2));
-        _animator = Managers.Game.GetPlayer().GetComponent<Animator>();
+        _animator = player.GetComponent<Animator>();
         if (ESkill != null)
             _animator.CrossFade($"{ESkill.skillName}", 0.1f, -1, 0);
     }
     public static void StartRSkill()
     {
         Skill RSkill = Managers.Skill.Find(skill => (skill.skillSlot == 3));
-        _animator = Managers.Game.GetPlayer().GetComponent<Animator>();
+        _animator = player.GetComponent<Animator>();
         if (RSkill != null)
             _animator.CrossFade($"{RSkill.skillName}", 0.1f, -1, 0);
     }
@@ -46,33 +50,47 @@ public class SkillController : MonoBehaviour
     public IEnumerator OnDSEvent() //방패찍기 스킬 이벤트
     {
         Skill skill = Managers.Skill.Find(skill => (skill.skillName == "방패 찍기"));
+        PlayerStat playerStat = player.GetComponent<PlayerStat>();
+		
+        Ray ray = new Ray(player.transform.position, Vector3.up);
+		RaycastHit[] hits = Physics.SphereCastAll(ray, skill.skillRange);
 
-        GameObject player = Managers.Game.GetPlayer();
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
-        List<GameObject> skillEffects = new List<GameObject>();
-
-        GameObject skillEffect1 =Managers.Resource.Instantiate("Effects/sacred/sacred_fx_11", player.transform);
-
-        skillEffects.Add(skillEffect1);
-
-        foreach (GameObject monster in monsters)
-        {
-            float distance = (monster.transform.position - player.transform.position).magnitude;
-            if (distance <= skill.skillRange)
-            {
-                Stat targetStat = monster.GetComponent<Stat>();
-                PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        foreach(var hit in hits){
+			if(hit.collider.CompareTag("Monster")){
+				Stat targetStat = hit.collider.GetComponent<Stat>();
                 targetStat.OnSkilled(gameObject, skill.skillDmg * playerStat.Attack * 0.5f);
-            }
-        }
-        Managers.Game.GetPlayer().GetComponent<PlayerController>().State = Define.State.Idle;
+			}
+		}
+        //GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        // foreach (GameObject monster in monsters)
+        // {
+        //     float distance = (monster.transform.position - player.transform.position).magnitude;
+        //     if (distance <= skill.skillRange)
+        //     {
+        //         Stat targetStat = monster.GetComponent<Stat>();
+        //         PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        //         targetStat.OnSkilled(gameObject, skill.skillDmg * playerStat.Attack * 0.5f);
+        //     }
+        // }
+
+        player.GetComponent<PlayerController>().State = Define.State.Idle;
 
         StartCoroutine(CoolTime(skill.skillCool, skill.skillSlot));
 
         yield return new WaitForSeconds(skill.skillCool);
+    }
 
-        foreach(GameObject skillEffect in skillEffects){
-            Managers.Resource.Destroy(skillEffect);
+    IEnumerator DSEffect(){
+        List<GameObject> skillEffects = new List<GameObject>();
+
+        GameObject skillEffect1 =Managers.Resource.Instantiate("Effects/sacred/sacred_fx_09", player.transform);
+
+        skillEffects.Add(skillEffect1);
+
+        yield return new WaitForSeconds(1.0f);
+
+        foreach(var skill in skillEffects){
+            Managers.Resource.Destroy(skill);
         }
     }
 
@@ -80,58 +98,77 @@ public class SkillController : MonoBehaviour
     {
         Skill skill = Managers.Skill.Find(skill => (skill.skillName == "증오의 함성"));
         
-
-        GameObject Myplayer = Managers.Game.GetPlayer();
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        List<GameObject> effectedPlayer = new List<GameObject>();
-        List<GameObject> skillEffects = new List<GameObject>();
-
-        GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/fire/fire_fx_02", Myplayer.transform);
-        GameObject skillEffect2 = Managers.Resource.Instantiate("Effects/fire/fire_fx_48", Myplayer.transform);
-        skillEffect2.transform.position += Vector3.up;
-
-        skillEffects.Add(skillEffect1);
-        skillEffects.Add(skillEffect2);
-
-        foreach (GameObject player in players)
-        {
-            float distance = (player.transform.position - Myplayer.transform.position).magnitude;
-
-            if (distance <= skill.skillRange)
-            {
-                Stat effectedStat = player.GetComponent<Stat>();
+        Ray ray = new Ray(player.transform.position, Vector3.up);
+		RaycastHit[] hits = Physics.SphereCastAll(ray, skill.skillRange);
+        
+        List<GameObject> effectedPlayers = new List<GameObject>();
+        
+        foreach(var hit in hits){
+			Debug.Log(hit.collider.name);
+			if(hit.collider.CompareTag("Player")){
+				Stat effectedStat = hit.collider.gameObject.GetComponent<Stat>();
                 effectedStat.Defense = (int)(effectedStat.Defense * 1.5f);
                 effectedStat.Attack = (int)(effectedStat.Attack*1.5f);
                 effectedStat.MaxHp = (int)(effectedStat.MaxHp *1.5f);
-                effectedStat.Hp += (int)(effectedStat.MaxHp *1.5f);
+                effectedStat.Hp += (int)(effectedStat.MaxHp * 1.5f - effectedStat.MaxHp);
                 effectedStat.MoveSpeed = (int)(effectedStat.MoveSpeed * 1.5f);
-                Util.FindGameSceneChild("UI_Status",true).GetComponent<UI_Status>().RefreshUI();
-                effectedPlayer.Add(player);
-            }
-        }
-        Myplayer.GetComponent<PlayerController>().State = Define.State.Idle;
+                effectedPlayers.Add(hit.collider.gameObject);
+			}
+		}
+
+        // GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        
+       
+
+        // foreach (GameObject player in players)
+        // {
+        //     float distance = (player.transform.position - Myplayer.transform.position).magnitude;
+
+        //     if (distance <= skill.skillRange)
+        //     {
+        //         Stat effectedStat = player.GetComponent<Stat>();
+        //         effectedStat.Defense = (int)(effectedStat.Defense * 1.5f);
+        //         effectedStat.Attack = (int)(effectedStat.Attack*1.5f);
+        //         effectedStat.MaxHp = (int)(effectedStat.MaxHp *1.5f);
+        //         effectedStat.Hp += (int)(effectedStat.MaxHp *1.5f);
+        //         effectedStat.MoveSpeed = (int)(effectedStat.MoveSpeed * 1.5f);
+        //         Util.FindGameSceneChild("UI_Status",true).GetComponent<UI_Status>().RefreshUI();
+        //         effectedPlayer.Add(player);
+        //     }
+        // }
+        //Myplayer.GetComponent<PlayerController>().State = Define.State.Idle;
         StartCoroutine(Duration(skill.skillDuration, skill));
         StartCoroutine(CoolTime(skill.skillCool, skill.skillSlot));
 
         yield return new WaitForSeconds(skill.skillDuration);
         
-        foreach(GameObject skillEffect in skillEffects){
-            Managers.Resource.Destroy(skillEffect);
-        }
-
-        foreach (var player in effectedPlayer)
+        foreach (var effectedPlayer in effectedPlayers)
         {
-            Stat effectedStat = player.GetComponent<Stat>();
+            Stat effectedStat = effectedPlayer.GetComponent<Stat>();
             effectedStat.Defense = (int)(effectedStat.Defense / 1.5f);
             effectedStat.Attack = (int)(effectedStat.Attack/1.5f);
             effectedStat.MaxHp = (int)(effectedStat.MaxHp /1.5f);
             effectedStat.MoveSpeed = (int)(effectedStat.MoveSpeed /1.5f);
             if(effectedStat.Hp>effectedStat.MaxHp)
                 effectedStat.Hp = effectedStat.MaxHp;
-
-            Util.FindGameSceneChild("UI_Status",true).GetComponent<UI_Status>().RefreshUI();
         }
+    }
 
+    IEnumerator BattleCryEffect(){
+        Skill skill = Managers.Skill.Find(skill => (skill.skillName == "증오의 함성"));
+
+        GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/fire/fire_fx_02", player.transform);
+        
+        yield return new WaitForSeconds(1.4f);
+        
+        Managers.Resource.Destroy(skillEffect1);
+
+        GameObject skillEffect2 = Managers.Resource.Instantiate("Effects/fire/fire_fx_48", player.transform);
+        skillEffect2.transform.position += Vector3.up * 1.5f;
+        player.GetComponent<PlayerController>().State = Define.State.Idle;
+        yield return new WaitForSeconds(skill.skillDuration - 1.5f);
+
+        Managers.Resource.Destroy(skillEffect2);
     }
     #endregion
 

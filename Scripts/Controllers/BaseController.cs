@@ -36,13 +36,21 @@ public abstract class BaseController : MonoBehaviour
 					anim.CrossFade("RUN", 0.1f);
 					break;
 				case Define.State.Attack:
-					anim.CrossFade("ATTACK", 0.1f, -1, 0);
+					StartCoroutine(Attack());
+					//anim.CrossFade("ATTACK", 0.1f, -1, 0);
 					break;
 				case Define.State.Skill:
 					break;
 			}
 		}
 	}
+
+	IEnumerator Attack(){
+		Animator anim = GetComponent<Animator>();
+		anim.CrossFade("ATTACK", 0.1f, -1, 0);
+		yield return new WaitForSeconds(1.0f);
+	}
+
 	public void Start() {
 		Init(_Id);
 	}
