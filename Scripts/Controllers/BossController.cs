@@ -12,14 +12,21 @@ public class BossController : BaseController
 	Animator animator;
 	GameObject player;
 	GameObject boxRange;
-	GameObject fillRange;
-	GameObject circleRange;
+	GameObject _fillRange;
+	GameObject _circleRange;
 
 	bool _startEngage = false;
 
 	[SerializeField]
-	float _scanRange = 10;
+	float _skill1Range = 2.5f;
+	[SerializeField]
+	float _skill2Range = 8.0f;
+	float _skill2HitRange;
 
+	[SerializeField]
+	float _skill3Range = 10.0f;
+	[SerializeField]
+	float _scanRange = 10;
 	[SerializeField]
 	float _attackRange = 3;
 
@@ -47,7 +54,7 @@ public class BossController : BaseController
 			_lockTarget = player;
 			State = Define.State.Moving;
 			if(!_startEngage){
-				StartCoroutine(StartEngage());
+				StartCoroutine(StartSkill());
 				_startEngage = true;
 			}
 			return;
@@ -105,7 +112,7 @@ public class BossController : BaseController
 		}
 	}
 
-	private IEnumerator StartEngage()
+	private IEnumerator StartSkill()
     {
 		yield return new WaitForSeconds(5.0f);
 		
@@ -175,136 +182,187 @@ public class BossController : BaseController
 			State = Define.State.Idle;
 		}
 	}
+
+#region Skill1
 	IEnumerator Skill1ReadyEffect(){
 		GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/sacred/sacred_fx_11", gameObject.transform);
 		yield return new WaitForSeconds(1.5f);
 		Managers.Resource.Destroy(skillEffect1);
 	}
-	IEnumerator Skill1Effect(){
-		List<GameObject> skillEffects = new List<GameObject>();
-		int skillCount = 10;
+	
+	IEnumerator SetSkill1Range(){
+		float startTime = 0.0f;
+		float skillReadyTime = 1.0f;
+		Vector3 randPos;
 
-        Vector3 randPos;
+		for(int i=0; i<10;i++){
+			GameObject circleRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
+			GameObject fillRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
+			fillRange.name = "FillRange";
 
-		for(int i=0; i<skillCount;i++){
-			GameObject skillEffect1 =Managers.Resource.Instantiate("Effects/fire/fire_fx_47");
-			NavMeshAgent nma = skillEffect1.GetOrAddComponent<NavMeshAgent>();
+			circleRange.transform.localScale = new Vector3(_skill1Range,_skill1Range, 0);
+			fillRange.transform.localScale = Vector3.zero;
+			
+			SpriteRenderer fillSprite = fillRange.GetComponent<SpriteRenderer>();
+			
+			Color fillColor = fillSprite.color;
+			fillColor.a = 200;
+			fillColor.g = 150;
+			fillSprite.color = fillColor;
+
+			NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();
 
 			while (true)
 			{
-				Vector3 randDir = UnityEngine.Random.insideUnitSphere * UnityEngine.Random.Range(0, 10.0f);					
+				Vector3 randDir = UnityEngine.Random.insideUnitSphere * UnityEngine.Random.Range(0, 20.0f);
 				randPos = transform.position + randDir;
 
 				NavMeshPath path = new NavMeshPath();
 				if (nma.CalculatePath(randPos, path))
 					break;
 			}
-
-			skillEffect1.transform.position = randPos;
-			skillEffects.Add(skillEffect1);
-			yield return new WaitForSeconds(0.3f);
-		}
-
-		foreach(var skill in skillEffects){
-			Managers.Resource.Destroy(skill);
-			yield return new WaitForSeconds(0.3f);
-		}
 			
+			randPos = Util.FindGround(randPos);
+			randPos.y += 0.1f;
+			
+			circleRange.transform.position = randPos;
+			fillRange.transform.position = randPos;
+
+			StartCoroutine(Skill1FillRange(startTime,skillReadyTime,circleRange,fillRange));
+			
+			yield return new WaitForSeconds(0.5f);
+		}
 	}
+	IEnumerator Skill1FillRange(float startTime, float skillReadyTime, GameObject circleRange, GameObject fillRange){
+		while(startTime <= skillReadyTime){
+			startTime += Time.deltaTime;
+			fillRange.transform.localScale = circleRange.transform.localScale/skillReadyTime * startTime;
+			yield return new WaitForFixedUpdate();
+		}
+
+		StartCoroutine(Skill1Effect(circleRange, fillRange));
+	}
+	
+	IEnumerator Skill1Effect(GameObject circleRange, GameObject fillRange){
+		GameObject skillEffect1 =Managers.Resource.Instantiate("Effects/fire/fire_fx_47");
+		
+
+		float range = circleRange.transform.lossyScale.x;
+		Vector3 pos = circleRange.transform.position;
+
+		Managers.Resource.Destroy(circleRange);
+		Managers.Resource.Destroy(fillRange);
+		
+		skillEffect1.transform.position = pos + new Vector3(-0.05f,0.1f,-3.0f);
+		
+		Ray ray = new Ray(pos, Vector3.up);
+		RaycastHit[] hits = Physics.SphereCastAll(ray, range);
+		
+		foreach(var hit in hits){
+			Debug.Log(hit.collider.name);
+			//OnDrawGizmos();
+			if(hit.collider.CompareTag("Player")){
+				PlayerStat targetStat = hit.collider.GetComponent<PlayerStat>();
+				targetStat.OnSkilled(gameObject, _stat.Attack * 1.3f);
+			}
+		}
+
+		yield return new WaitForSeconds(0.5f);
+		
+		Managers.Resource.Destroy(skillEffect1);
+	}
+
+	void EndSkill1Event(){
+		State = Define.State.Idle;
+		StartCoroutine(StartSkill());
+	}
+#endregion
+#region Skill2
 	IEnumerator Skill2ReadyEffect(){
 		GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/dark/dark_fx_15", gameObject.transform);
 		yield return new WaitForSeconds(1.5f);
 		Managers.Resource.Destroy(skillEffect1);
 	}
-	
+
+	IEnumerator SetSkill2Range(){
+		float startTime = 0.0f;
+		float skillReadyTime = 1.3f;
+		_circleRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
+		_fillRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
+
+		_circleRange.transform.position = transform.position;
+		_fillRange.transform.position = transform.position;
+
+		_circleRange.transform.localScale = new Vector3(_skill2Range,_skill2Range,0);
+		_fillRange.transform.localScale = Vector3.zero;
+
+		SpriteRenderer fillSprite = _fillRange.GetComponent<SpriteRenderer>();
+		
+		Color fillColor = fillSprite.color;
+		fillColor.a = 200;
+		fillColor.g = 150;
+		fillSprite.color = fillColor;
+
+		while(startTime <= skillReadyTime){
+			startTime += Time.deltaTime;
+			_fillRange.transform.localScale = _circleRange.transform.localScale/skillReadyTime * startTime;
+			yield return new WaitForFixedUpdate();
+		}
+		_skill2HitRange=_circleRange.transform.lossyScale.x;
+		Managers.Resource.Destroy(_circleRange);
+		Managers.Resource.Destroy(_fillRange);
+	}
+
 	IEnumerator Skill2Effect(){
 		List<GameObject> skillEffects = new List<GameObject>();
-
-        GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/lightning/lightning_fx_08", gameObject.transform);
-		yield return new WaitForSeconds(1.0f);
+        GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/lightning/lightning_fx_08");
+		skillEffect1.transform.position = gameObject.transform.position + new Vector3(0.5f,0,-1.5f);
+		skillEffect1.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+		yield return new WaitForSeconds(0.5f);
 		Managers.Resource.Destroy(skillEffect1);
 	}
+
+	void Skill2Hit(){
+		Ray ray = new Ray(transform.position, Vector3.up);
+		RaycastHit[] hits = Physics.SphereCastAll(ray, 5.5f);
+		
+		foreach(var hit in hits){
+			Debug.Log(hit.collider.name);
+			//OnDrawGizmos();
+			if(hit.collider.CompareTag("Player")){
+				PlayerStat targetStat = hit.collider.GetComponent<PlayerStat>();
+				targetStat.OnSkilled(gameObject, _stat.Attack * 1.5f);
+			}
+		}
+	}
+
+	void EndSkill2Event(){
+		State = Define.State.Idle;
+		StartCoroutine(StartSkill());
+	}
+#endregion
+#region Skill3
 	IEnumerator Skill3ReadyEffect(){
 		GameObject skillEffect1 = Managers.Resource.Instantiate("Effects/fire/fire_fx_39", gameObject.transform);
 		yield return new WaitForSeconds(1.5f);
 		Managers.Resource.Destroy(skillEffect1);
 	}
+
 	IEnumerator Skill3Effect(){
 		List<GameObject> skillEffects = new List<GameObject>();
-		Vector3 dir = _lockTarget.transform.position - transform.position;
-		Quaternion quat = Quaternion.LookRotation(dir);
-		transform.rotation = Quaternion.Lerp(transform.rotation, quat, 20 * Time.deltaTime);
         GameObject skillEffect1 =Managers.Resource.Instantiate("Effects/fire/fire_fx_50", gameObject.transform);
 
 		yield return new WaitForSeconds(2.0f);
 
 		Managers.Resource.Destroy(skillEffect1);
 	}
-	IEnumerator SetSkill1Range(){
-		float startTime = 0.0f;
-		float skillReadyTime = 1.3f;
-		circleRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
-		fillRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
-
-		circleRange.transform.position = transform.position;
-		fillRange.transform.position = transform.position;
-		SpriteRenderer fillSprite = fillRange.GetComponent<SpriteRenderer>();
-		
-		Color fillColor = fillSprite.color;
-		fillColor.a = 200;
-		fillColor.g = 150;
-		fillSprite.color = fillColor;
-		
-		Vector3 fillScale = fillRange.transform.localScale;
-		Vector3 circleScale = circleRange.transform.localScale;
-
-		fillScale = Vector3.zero;
-
-		while(startTime <= skillReadyTime){
-			startTime += Time.deltaTime;
-			fillRange.transform.localScale = circleRange.transform.localScale/skillReadyTime * startTime;
-			// fillScale.x = circleScale.x/skillReadyTime * startTime;
-			// fillScale.y = circleScale.y/skillReadyTime * startTime;
-			// fillRange.transform.localScale = fillScale;
-			yield return new WaitForFixedUpdate();
-		}
-
-		Managers.Resource.Destroy(circleRange);
-		Managers.Resource.Destroy(fillRange);
+	void EndSkill3Event(){
+		State = Define.State.Idle;
+		StartCoroutine(StartSkill());
 	}
+#endregion
 
-	IEnumerator SetSkill2Range(){
-		float startTime = 0.0f;
-		float skillReadyTime = 1.3f;
-		circleRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
-		fillRange = Managers.Resource.Instantiate("SkillRange/CircleRange");
-
-		circleRange.transform.position = transform.position;
-		fillRange.transform.position = transform.position;
-		SpriteRenderer fillSprite = fillRange.GetComponent<SpriteRenderer>();
-		
-		Color fillColor = fillSprite.color;
-		fillColor.a = 200;
-		fillColor.g = 150;
-		fillSprite.color = fillColor;
-		
-		Vector3 fillScale = fillRange.transform.localScale;
-		Vector3 circleScale = circleRange.transform.localScale;
-
-		fillScale = Vector3.zero;
-
-		while(startTime <= skillReadyTime){
-			startTime += Time.deltaTime;
-			fillRange.transform.localScale = circleRange.transform.localScale/skillReadyTime * startTime;
-			// fillScale.x = circleScale.x/skillReadyTime * startTime;
-			// fillScale.y = circleScale.y/skillReadyTime * startTime;
-			// fillRange.transform.localScale = fillScale;
-			yield return new WaitForFixedUpdate();
-		}
-
-		Managers.Resource.Destroy(circleRange);
-		Managers.Resource.Destroy(fillRange);
-	}
+	
 
 	// void OnDrawGizmos() {
 	// 	if(boxRange != null){
@@ -334,37 +392,5 @@ public class BossController : BaseController
 	// 		}
 	// 	}
     // }
-
-	void Skill1Hit(){
-		PlayerStat targetStat = player.GetComponent<PlayerStat>();
-		targetStat.OnSkilled(gameObject, _stat.Attack * 3.0f);
-	}
-	void Skill2Hit(){
-		Ray ray = new Ray(transform.position, Vector3.up);
-		RaycastHit[] hits = Physics.SphereCastAll(ray, 5.0f);
-		
-		foreach(var hit in hits){
-			Debug.Log(hit.collider.name);
-			//OnDrawGizmos();
-			if(hit.collider.CompareTag("Player")){
-				PlayerStat targetStat = hit.collider.GetComponent<PlayerStat>();
-				targetStat.OnSkilled(gameObject, _stat.Attack * 1.5f);
-			}
-		}
-	}
-
-	void EndSkill1Event(){
-		State = Define.State.Idle;
-		StartCoroutine(StartEngage());
-	}
-
-	void EndSkill2Event(){
-		State = Define.State.Idle;
-		StartCoroutine(StartEngage());
-	}
-	void EndSkill3Event(){
-		State = Define.State.Idle;
-		StartCoroutine(StartEngage());
-	}
 
 }

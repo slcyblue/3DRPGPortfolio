@@ -4,13 +4,13 @@ using Data;
 using UnityEngine;
 
 public class NpcController : BaseController{
-    GameObject player = null;
+    GameObject player;
     UI_Shop shopUI;
     UI_Enhance enhanceUI;
     public NpcData npcData = null;
     Vector3 startPos;
     Quaternion startRotate;
-    bool playerIsNear;
+    bool playerIsNear = false;
 
     public override void Init(int npcId) {
         WorldObjectType = Define.WorldObject.Npc;
@@ -19,6 +19,7 @@ public class NpcController : BaseController{
         State = Define.State.Idle;
         startPos = transform.position;
         startRotate = transform.rotation;
+        player = Managers.Game.GetPlayer();
 
         shopUI = GameObject.Find("@UI_Root/UI_GameScene/UI_Shop").GetComponent<UI_Shop>();
         enhanceUI = GameObject.Find("@UI_Root/UI_GameScene/UI_Enhance").GetComponent<UI_Enhance>();

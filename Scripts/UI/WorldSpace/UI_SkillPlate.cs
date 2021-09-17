@@ -12,8 +12,6 @@ public class UI_SkillPlate : UI_Scene{
     
     public override void Init()
     {
-        Skills.Clear();
-        
         GameObject grid = gameObject.transform.GetChild(0).gameObject;
         foreach (Transform child in grid.transform){
             if(child == null){

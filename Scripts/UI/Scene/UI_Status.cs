@@ -9,7 +9,8 @@ public class UI_Status : UI_Base
     PlayerStat _playerStat;
     GameObject equipSlots;
     UI_Status_Text statsText;
-    PlayerController player;
+    GameObject player;
+    PlayerController pc;
     public override void Init()
     {
 
@@ -18,13 +19,12 @@ public class UI_Status : UI_Base
 #region SetItem
     public void SetEquip()
     {   
-        player = Managers.Game.GetPlayer().GetComponent<PlayerController>();
+        player = Managers.Game.GetPlayer();
+        pc = player.GetComponent<PlayerController>();
 
-        equipSlots = gameObject.transform.GetChild(2).gameObject;
-        statsText = gameObject.transform.GetChild(1).gameObject.GetOrAddComponent<UI_Status_Text>();
-        statsText.transform.GetChild(0).GetComponent<Text>().text = GameObject.FindWithTag("Player").name;
+        statsText = gameObject.transform.GetChild(1).gameObject.GetComponent<UI_Status_Text>();
+        equipSlots = gameObject.transform.GetChild(2).gameObject;        
         
-        _playerStat = GameObject.FindWithTag("Player").GetComponent<PlayerStat>();
         foreach(Transform child in equipSlots.transform){
             UI_Equip_Item equip = child.gameObject.GetOrAddComponent<UI_Equip_Item>();
             equip._itemType = equip.gameObject.name;
@@ -70,11 +70,12 @@ public class UI_Status : UI_Base
                     break;
             }
         }
-        statsText.SetText(_playerStat);
+
+        statsText.SetText(player);
     }
 
     public void OnClickQuit(){
-        player._stopMoving = false;
+        pc._stopMoving = false;
         gameObject.SetActive(false);
     }
 #endregion

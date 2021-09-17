@@ -11,6 +11,7 @@ public class PlayerController : BaseController
     PlayerStat _stat;
     bool _stopAttack = false;
     bool _stopCast = false;
+    bool checkUIActive = false;
     Skill _skill;
 
     Animator _animator;
@@ -355,10 +356,12 @@ public class PlayerController : BaseController
                 }
             }else if(Input.GetKey(KeyCode.Escape)){
                 GameObject gameUI = GameObject.Find("@UI_Root/UI_GameScene");
-                bool checkUIActive = false;
-                for(int i = 5; i<0;i--){
+                
+                for(int i=5; i>=0; i--){
                     if(gameUI.transform.GetChild(i).gameObject.activeSelf == true){
+                        Debug.Log(gameUI.transform.GetChild(i).gameObject.name);
                         gameUI.transform.GetChild(i).gameObject.SetActive(false);
+                        _stopMoving = false;
                         checkUIActive = true;
                         break;
                     }

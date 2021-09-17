@@ -13,6 +13,7 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
     public bool isOver = false;
     Color color;
     PlayerStat _playerStat;
+    GameObject _player;
     UI_Status_Text statsText;
     GameObject _shopUI;
     GameObject _enhanceUI;
@@ -23,8 +24,8 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
     {
         _itemSlot = itemSlot;
         statsText = transform.parent.transform.GetChild(1).gameObject.GetOrAddComponent<UI_Status_Text>();
-
-        _playerStat = Managers.Game.GetPlayer().GetComponent<PlayerStat>();
+        _player = Managers.Game.GetPlayer();
+        _playerStat = _player.GetComponent<PlayerStat>();
         _shopUI = Util.FindGameSceneChild("UI_Shop", true);
         _enhanceUI = Util.FindGameSceneChild("UI_Enhance", true);
         _equipUI = Util.FindGameSceneChild("UI_Status", true);
@@ -96,7 +97,7 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
                             go.transform.Find(clickItem.itemType).GetComponentInChildren<UI_Equip_Item>().SetItem(clickItem.itemType);
 
                             _playerStat.PlusEquipStat(clickItem);
-                            statsText.SetText(_playerStat);
+                            statsText.SetText(_player);
                         }
                         else
                         {
@@ -113,7 +114,7 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
                             //after DB switch
                             _playerStat.AbsEquipStat(equipItem);
                             _playerStat.PlusEquipStat(clickItem);
-                            statsText.SetText(_playerStat);
+                            statsText.SetText(_player);
                         }
                     }
                     else if (_itemData.itemTemplate == Define.ItemTemplate.Consumable.ToString())
@@ -306,7 +307,7 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
                 //after DB switch
                 _playerStat.AbsEquipStat(dragItem);
                 _playerStat.PlusEquipStat(dropItem);
-                statsText.SetText(_playerStat);
+                statsText.SetText(_player);
             }
         }
         else
@@ -319,7 +320,7 @@ public class UI_Inven_Item : UI_Inven, IPointerClickHandler, IBeginDragHandler, 
             DragSlot.instance.equipSlot.ClearSlot(); //set dragSlot with dragSlot index
 
             _playerStat.AbsEquipStat(dragItem);
-            statsText.SetText(_playerStat);
+            statsText.SetText(_player);
         }
     }
 

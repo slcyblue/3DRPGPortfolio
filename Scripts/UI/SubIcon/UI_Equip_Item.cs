@@ -11,13 +11,15 @@ public class UI_Equip_Item : UI_Status, IPointerClickHandler, IBeginDragHandler,
     public string _itemType;
     public bool isOver = false;
     Color color;
+    GameObject _player;
     PlayerStat _playerStat;
     UI_Status_Text statsText;
 
 	public override void Init()
 	{
         statsText = transform.parent.transform.GetChild(1).gameObject.GetOrAddComponent<UI_Status_Text>();
-        _playerStat = Managers.Game.GetPlayer().GetComponent<PlayerStat>();
+        _player = Managers.Game.GetPlayer();
+        _playerStat = _player.GetComponent<PlayerStat>();
 	}
 
 	public void SetItem(string itemType)
@@ -54,7 +56,7 @@ public class UI_Equip_Item : UI_Status, IPointerClickHandler, IBeginDragHandler,
             {
                 if(_itemData.itemTemplate == Define.ItemTemplate.Equipment.ToString())
                 {
-                    if(Managers.Inven.Items.Count<=24){
+                    if(Managers.Inven.Items.Count<=56){
                         //아이템 해제
                         Managers.Equip.Items.TryGetValue(_itemType, out Item clickItem);
                         Managers.Equip.Remove(clickItem);
@@ -65,7 +67,7 @@ public class UI_Equip_Item : UI_Status, IPointerClickHandler, IBeginDragHandler,
                         go.Items[clickItem.itemSlot].SetItem(clickItem.itemSlot);
 
                         _playerStat.AbsEquipStat(clickItem);
-                        statsText.SetText(_playerStat);
+                        statsText.SetText(_player);
                     }else{
                         Debug.Log("가방이 가득 찼습니다");
                     }
@@ -149,7 +151,7 @@ public class UI_Equip_Item : UI_Status, IPointerClickHandler, IBeginDragHandler,
 
                 _playerStat.AbsEquipStat(dropItem);
                 _playerStat.PlusEquipStat(dragItem);
-                statsText.SetText(_playerStat);
+                statsText.SetText(_player);
                 }else
                     Debug.Log("아이템 형식이 다릅니다");
             }
@@ -162,7 +164,7 @@ public class UI_Equip_Item : UI_Status, IPointerClickHandler, IBeginDragHandler,
                 DragSlot.instance.invenSlot.ClearSlot(); //clear dragSlot
 
                 _playerStat.PlusEquipStat(dragItem);
-                statsText.SetText(_playerStat);
+                statsText.SetText(_player);
             }
         }else
             Debug.Log("아이템 형식이 다릅니다");

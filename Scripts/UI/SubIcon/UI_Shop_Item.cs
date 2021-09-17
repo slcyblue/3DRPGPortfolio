@@ -167,7 +167,7 @@ public class UI_Shop_Item : UI_Shop, IPointerClickHandler, IBeginDragHandler, ID
     {
         if (_playerStat.Gold - (_itemData.itemPrice * count) >= 0)
         {
-            if (count < 24 - Managers.Inven.Items.Count)
+            if (count < 56 - Managers.Inven.Items.Count)
             {
                 for (int i = 0; i < count; i++)
                 {

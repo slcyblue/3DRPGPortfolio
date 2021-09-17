@@ -24,8 +24,8 @@ public class GameManagerEx
         {
             case Define.WorldObject.Monster:
                 Managers.Data.MonsterDict.TryGetValue(Id, out monsterData);
-                go = Managers.Resource.Instantiate(monsterData.monsterName, parent);
-                go.GetComponent<BaseController>().Init(Id);
+                go = Managers.Resource.Instantiate($"Monsters/{monsterData.monsterName}", parent);
+                go.GetOrAddComponent<MonsterController>().Init(Id);
 
                 _monsters.Add(go);
                 if (OnSpawnEvent != null)
@@ -39,7 +39,7 @@ public class GameManagerEx
                 break;
             case Define.WorldObject.Npc:
                 Managers.Data.NpcDict.TryGetValue(Id, out npcData);
-                go = Managers.Resource.Instantiate(npcData.npcName, parent);
+                go = Managers.Resource.Instantiate($"Npc/{npcData.npcName}", parent);
                 go.GetOrAddComponent<NpcController>().Init(Id);
                 break;
         }

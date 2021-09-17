@@ -8,14 +8,13 @@ public class UI_Skill_Slot : UI_SkillPlate, IPointerClickHandler, IBeginDragHand
 {
     public int _skillSlot;
     public Skill _skillData;
-    GameObject _invenUI;
     Text _skillInput;
     Color color;
     public Image _iconImage;
 
     public override void Init()
     {
-        _invenUI = GameObject.Find("@UI_Root/UI_GameScene/UI_Inven");
+        
     }
 
     public void SetSkill(int skillId)

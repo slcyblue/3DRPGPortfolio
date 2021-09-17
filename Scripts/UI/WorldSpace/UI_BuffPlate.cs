@@ -9,6 +9,5 @@ using UnityEngine.UI;
 public class UI_BuffPlate : UI_Scene{
     public override void Init()
     {
-        
     }
 }

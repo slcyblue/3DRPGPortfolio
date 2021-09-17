@@ -58,20 +58,9 @@ public class SkillController : MonoBehaviour
         foreach(var hit in hits){
 			if(hit.collider.CompareTag("Monster")){
 				Stat targetStat = hit.collider.GetComponent<Stat>();
-                targetStat.OnSkilled(gameObject, skill.skillDmg * playerStat.Attack * 0.5f);
+                targetStat.OnSkilled(gameObject, skill.skillDmg + playerStat.Attack * 0.5f);
 			}
 		}
-        //GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
-        // foreach (GameObject monster in monsters)
-        // {
-        //     float distance = (monster.transform.position - player.transform.position).magnitude;
-        //     if (distance <= skill.skillRange)
-        //     {
-        //         Stat targetStat = monster.GetComponent<Stat>();
-        //         PlayerStat playerStat = player.GetComponent<PlayerStat>();
-        //         targetStat.OnSkilled(gameObject, skill.skillDmg * playerStat.Attack * 0.5f);
-        //     }
-        // }
 
         player.GetComponent<PlayerController>().State = Define.State.Idle;
 
@@ -104,7 +93,6 @@ public class SkillController : MonoBehaviour
         List<GameObject> effectedPlayers = new List<GameObject>();
         
         foreach(var hit in hits){
-			Debug.Log(hit.collider.name);
 			if(hit.collider.CompareTag("Player")){
 				Stat effectedStat = hit.collider.gameObject.GetComponent<Stat>();
                 effectedStat.Defense = (int)(effectedStat.Defense * 1.5f);
@@ -116,27 +104,6 @@ public class SkillController : MonoBehaviour
 			}
 		}
 
-        // GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        
-       
-
-        // foreach (GameObject player in players)
-        // {
-        //     float distance = (player.transform.position - Myplayer.transform.position).magnitude;
-
-        //     if (distance <= skill.skillRange)
-        //     {
-        //         Stat effectedStat = player.GetComponent<Stat>();
-        //         effectedStat.Defense = (int)(effectedStat.Defense * 1.5f);
-        //         effectedStat.Attack = (int)(effectedStat.Attack*1.5f);
-        //         effectedStat.MaxHp = (int)(effectedStat.MaxHp *1.5f);
-        //         effectedStat.Hp += (int)(effectedStat.MaxHp *1.5f);
-        //         effectedStat.MoveSpeed = (int)(effectedStat.MoveSpeed * 1.5f);
-        //         Util.FindGameSceneChild("UI_Status",true).GetComponent<UI_Status>().RefreshUI();
-        //         effectedPlayer.Add(player);
-        //     }
-        // }
-        //Myplayer.GetComponent<PlayerController>().State = Define.State.Idle;
         StartCoroutine(Duration(skill.skillDuration, skill));
         StartCoroutine(CoolTime(skill.skillCool, skill.skillSlot));
 

@@ -52,7 +52,7 @@ public class UI_Enhance_Item : UI_Enhance, IPointerClickHandler, IBeginDragHandl
             {
                 if(_itemData.itemTemplate == Define.ItemTemplate.Equipment.ToString())
                 {
-                    if(Managers.Inven.Items.Count<=24){
+                    if(Managers.Inven.Items.Count<=56){
                         //아이템 해제
                         Managers.Inven.Add(_itemData);
                         

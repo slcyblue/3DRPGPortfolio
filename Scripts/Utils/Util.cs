@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Util
@@ -55,4 +56,38 @@ public class Util
         GameObject go = GameObject.Find($"@UI_Root/UI_GameScene/{name}");
         return go;
     }
+
+    public static Vector3 FindGround(Vector3 position){
+		Ray rayUp = new Ray(position, Vector3.up);
+		Ray rayDown = new Ray(position, Vector3.down);
+		RaycastHit[] hits = Physics.RaycastAll(rayUp, 100.0f);
+		bool findGround = false;
+
+		if(hits.Count()>0){
+			foreach(var hit in hits){
+				if(hit.collider.CompareTag("Ground")){
+					position.y = hit.collider.transform.position.y;
+					findGround = true;
+				}
+			}
+			if(!findGround){
+				hits = Physics.RaycastAll(rayDown, 100.0f);
+				
+				foreach(var hit in hits){
+					if(hit.collider.CompareTag("Ground")){
+						position.y = hit.collider.transform.position.y;
+					}
+				}
+			}
+		}else{
+			hits = Physics.RaycastAll(rayDown, 100.0f);
+			
+			foreach(var hit in hits){
+				if(hit.collider.CompareTag("Ground")){
+					position.y = hit.collider.transform.position.y;
+				}
+			}
+		}
+		return position;
+	}
 }
