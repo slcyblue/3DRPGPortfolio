@@ -7,7 +7,7 @@ public class GameManagerEx
 {
     GameObject _player;
     //Dictionary<int, GameObject> _players = new Dictionary<int, GameObject>();
-    HashSet<GameObject> _monsters = new HashSet<GameObject>();
+    public HashSet<GameObject> _monsters = new HashSet<GameObject>();
 
     public Action<int> OnSpawnEvent;
 

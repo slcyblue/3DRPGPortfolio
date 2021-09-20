@@ -87,9 +87,9 @@ public class InvenManager
 		for(int i=0; i<items.Length; i++){
 			if(items[i] != null){
 				if(items[i].itemSlot != i){
-				Items.TryGetValue(items[i].itemSlot, out Item sortItem);
-				Items.Remove(sortItem.itemSlot);
-				Add(sortItem, i);
+					Items.TryGetValue(items[i].itemSlot, out Item sortItem);
+					Items.Remove(sortItem.itemSlot);
+					Add(sortItem, i);
 				}
 			}else{
 				break;

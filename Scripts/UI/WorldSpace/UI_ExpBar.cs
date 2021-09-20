@@ -21,8 +21,8 @@ public class UI_ExpBar : UI_Scene{
         level=player.Level;
         Managers.Data.StatDict.TryGetValue(level + 1, out stat);
         
-        float ratio = player.Exp/(float)stat.totalExp*100;
+        float ratio = player.Exp/(float)stat.totalExp;
         slider.value = ratio;
-        slider.GetComponentInChildren<Text>().text = $"Exp {player.Exp}/{stat.totalExp}({ratio.ToString("0%")}%)";
+        slider.GetComponentInChildren<Text>().text = $"Exp {player.Exp}/{stat.totalExp}({ratio.ToString("0%")})";
     }
 }

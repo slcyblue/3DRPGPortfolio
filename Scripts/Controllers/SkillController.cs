@@ -95,10 +95,11 @@ public class SkillController : MonoBehaviour
         foreach(var hit in hits){
 			if(hit.collider.CompareTag("Player")){
 				Stat effectedStat = hit.collider.gameObject.GetComponent<Stat>();
+                float originMaxHp = effectedStat.MaxHp;
                 effectedStat.Defense = (int)(effectedStat.Defense * 1.5f);
                 effectedStat.Attack = (int)(effectedStat.Attack*1.5f);
                 effectedStat.MaxHp = (int)(effectedStat.MaxHp *1.5f);
-                effectedStat.Hp += (int)(effectedStat.MaxHp * 1.5f - effectedStat.MaxHp);
+                effectedStat.Hp += (int)(effectedStat.MaxHp - originMaxHp);
                 effectedStat.MoveSpeed = (int)(effectedStat.MoveSpeed * 1.5f);
                 effectedPlayers.Add(hit.collider.gameObject);
 			}

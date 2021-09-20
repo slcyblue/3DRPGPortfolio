@@ -69,7 +69,6 @@ public class MonsterStat : Stat
 				Item potion = Managers.Inven.Find(item => (item.itemId==rewardItem.itemId));
 				
 				if(potion != null){
-					//지우고 다시 생성해야되는지 아님 이걸로 수정이 되는지 확인 필요.
 					potion.itemCount ++;
 					Util.FindGameSceneChild("UI_Inven",true).GetComponent<UI_Inven>().RefreshUI();
 				}else{

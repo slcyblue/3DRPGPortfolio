@@ -132,16 +132,13 @@ public class BossController : BaseController
 			
 		switch(randSkill){
 			case 0:
-				animator.CrossFade("SKILL1",0.1f);
-				Debug.Log("스킬1");
+				animator.CrossFade("SKILL1",0.1f,1);
 				break;
 			case 1:
-				animator.CrossFade("SKILL2",0.1f);
-				Debug.Log("스킬2");
+				animator.CrossFade("SKILL2",0.1f,1);
 				break;
 			case 2:
-				animator.CrossFade("SKILL3",0.1f);
-				Debug.Log("스킬3");
+				animator.CrossFade("SKILL3",0.1f,1);
 				break;
 		}
 		usedSkill.Push(randSkill);

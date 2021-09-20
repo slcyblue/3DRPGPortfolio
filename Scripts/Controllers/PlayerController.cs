@@ -359,7 +359,6 @@ public class PlayerController : BaseController
                 
                 for(int i=5; i>=0; i--){
                     if(gameUI.transform.GetChild(i).gameObject.activeSelf == true){
-                        Debug.Log(gameUI.transform.GetChild(i).gameObject.name);
                         gameUI.transform.GetChild(i).gameObject.SetActive(false);
                         _stopMoving = false;
                         checkUIActive = true;
@@ -372,8 +371,8 @@ public class PlayerController : BaseController
                         _lockTarget = null;
                     }else{
                         if(menuUI.gameObject.activeSelf==false){
-                            menuUI.transform.SetAsLastSibling();
                             menuUI.gameObject.SetActive(true);
+                            menuUI.transform.SetAsLastSibling();
                         }
                     }
                 }

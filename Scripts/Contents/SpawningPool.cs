@@ -7,8 +7,11 @@ public class SpawningPool : MonoBehaviour
 {
     [SerializeField]
     int _monsterCount = 0;
+    [SerializeField]
     int _reserveCount = 0;
+    [SerializeField]
     int _MaxMonsterCount = 20;
+    [SerializeField]
     int level = 1;
 
     [SerializeField]
@@ -27,6 +30,7 @@ public class SpawningPool : MonoBehaviour
 
     void Start()
     {
+        Managers.Game._monsters.Clear();
         Managers.Game.OnSpawnEvent -= AddMonsterCount;
         Managers.Game.OnSpawnEvent += AddMonsterCount;
     }
@@ -35,20 +39,26 @@ public class SpawningPool : MonoBehaviour
     {
         while (_reserveCount + _monsterCount < _keepMonsterCount)
         {
-            if(_MaxMonsterCount>=0){
+            if(_MaxMonsterCount>0){
                 StartCoroutine(ReserveSpawn(level));
             }else{
-                level++;
-                if(level > 3){
-                    _keepMonsterCount = 0;
-                    GameObject[] bossDoor = GameObject.FindGameObjectsWithTag("Door");
-                    foreach(var door in bossDoor){
-                        door.GetComponent<Animator>().Play("DoorOpen");
-                    }
+                if(Managers.Game._monsters.Count>0)
                     break;
-                }        
-                _MaxMonsterCount = 20;
-                StartCoroutine(ReserveSpawn(level));
+                else{
+                    level++;
+                    if(level > 3){
+                        if(Managers.Game._monsters.Count>0)
+                            break;
+                        
+                        _keepMonsterCount = 0;
+                        GameObject bossDoor = GameObject.FindGameObjectWithTag("Door");
+                        bossDoor.transform.GetChild(2).gameObject.SetActive(false);
+                        bossDoor.GetComponent<Animator>().Play("DoorOpen");
+                        break;
+                    }        
+                    _MaxMonsterCount = 20;
+                    StartCoroutine(ReserveSpawn(level));
+                }
             }
         }
     }

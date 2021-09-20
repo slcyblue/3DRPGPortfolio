@@ -10,6 +10,7 @@ public class UI_Enhance : UI_Base
     public Data.Enhance _expectedData;
     public UI_Enhance_Item _enhanceSlot;
     public Text _enhanceName;
+    public Text _entryText;
     public GameObject _currentText;
     public GameObject _expectedText;
     public bool _popFinished = false;
@@ -25,21 +26,27 @@ public class UI_Enhance : UI_Base
     {
         _enhanceSlot = transform.GetChild(0).GetComponent<UI_Enhance_Item>();
         _enhanceName = transform.GetChild(1).gameObject.GetComponent<Text>();
-        _currentText = transform.GetChild(2).gameObject;
-        _expectedText = transform.GetChild(3).gameObject;
+        _entryText = transform.GetChild(2).gameObject.GetComponent<Text>();
+        _currentText = transform.GetChild(3).gameObject;
+        _expectedText = transform.GetChild(4).gameObject;
 
         player = Managers.Game.GetPlayer().GetComponent<PlayerController>();
+
+        RefreshUI();
     }
     
     public void RefreshUI(){
         if(_enhanceSlot._itemData != null){
             _enhanceName.text = $"(+{_enhanceItem.itemEnhance}){_enhanceItem.itemName}";
+            _entryText.gameObject.SetActive(false);
+            _currentText.SetActive(true);
+            _expectedText.SetActive(true);
             SetCurrentText(_enhanceItem);
             SetExpectedText(_enhanceItem);
         }else{
             _enhanceName.text = "";
-            ClearCurrentText();
-            ClearExpectedText();
+            string text = "아이템을 등록해주세요";
+            noItem(text);
         }
     }
 
@@ -53,21 +60,26 @@ public class UI_Enhance : UI_Base
 
     protected void SetExpectedText(Item enhanceItem){
         Managers.Data.EnhanceDict.TryGetValue(enhanceItem.itemEnhance, out _expectedData);
-        _expectedText.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = $"{_expectedData.nextEnhance}";
-        _expectedText.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemDmg+_expectedData.increasedDmg} (+{_expectedData.increasedDmg})";
-        _expectedText.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemDefense+_expectedData.increasedDef} (+{_expectedData.increasedDef})";
-        _expectedText.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemHp+_expectedData.increasedHp} (+{_expectedData.increasedHp})";
-        _expectedText.transform.GetChild(4).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemMp+_expectedData.increasedMp} (+{_expectedData.increasedMp})";
+        if(_expectedData!=null){
+            _expectedText.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = $"{_expectedData.nextEnhance}";
+            _expectedText.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemDmg+_expectedData.increasedDmg} (+{_expectedData.increasedDmg})";
+            _expectedText.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemDefense+_expectedData.increasedDef} (+{_expectedData.increasedDef})";
+            _expectedText.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemHp+_expectedData.increasedHp} (+{_expectedData.increasedHp})";
+            _expectedText.transform.GetChild(4).GetChild(0).GetComponent<Text>().text = $"{enhanceItem.itemMp+_expectedData.increasedMp} (+{_expectedData.increasedMp})";
+        }else{
+            string text = "강화가 최대치입니다";
+            noItem(text);
+        }
+        
     }
 
-    protected void ClearCurrentText(){
-    foreach(Transform child in _currentText.transform)
-        child.GetChild(0).GetComponent<Text>().text = "";
+    protected void noItem(string text){
+        _entryText.gameObject.SetActive(true);
+        _entryText.text = $"{text}";
+        _currentText.SetActive(false);
+        _expectedText.SetActive(false);
     }
-    protected void ClearExpectedText(){
-    foreach(Transform child in _expectedText.transform)
-        child.GetChild(0).GetComponent<Text>().text = "";
-    }
+
 
     public void OnClickEnhance(){
         
