@@ -20,7 +20,7 @@ public class DungeonScene : BaseScene
 
         GameObject go = new GameObject { name = "SpawningPool" };
         SpawningPool pool = go.GetOrAddComponent<SpawningPool>();
-        pool.SetKeepMonsterCount(10);
+        pool.SetKeepMonsterCount(5);
         Managers.Resource.Instantiate("Slayer", null).GetComponent<BossController>().Init(410);
         
         Managers.UI.ShowSceneUI<UI_SkillPlate>();

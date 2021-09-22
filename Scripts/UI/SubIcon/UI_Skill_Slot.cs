@@ -178,7 +178,7 @@ public class UI_Skill_Slot : UI_SkillPlate, IPointerClickHandler, IBeginDragHand
 
                 Managers.Skill.Add(DragSlot.instance.skillList._skillData, _skillSlot); //Add dragData to dropSlot index
                 
-                SetSkill(DragSlot.instance.skillList._skillData.skillId); //1번에 0번 스킬 등록
+                SetSkill(DragSlot.instance.skillList._skillData.skillId);
             }else
                 Managers.UI.ShowPopupUI<UI_Alert>().SetText("이미 등록된 스킬입니다.");
             

@@ -8,6 +8,7 @@ public class UI_Menu : UI_Base{
     public Button ReturnButton;
     public Button EscapeButton;
     public Button EndGameButton;
+    PlayerController pc;
 
 
     public override void Init()
@@ -16,7 +17,8 @@ public class UI_Menu : UI_Base{
     }
     
     public void SetMenu()
-    {        
+    {   
+        pc = Managers.Game.GetPlayer().GetComponent<PlayerController>();
         ReturnButton = transform.GetChild(2).GetComponent<Button>();
         EscapeButton = transform.GetChild(3).GetComponent<Button>();
         EndGameButton = transform.GetChild(4).GetComponent<Button>();
@@ -43,6 +45,9 @@ public class UI_Menu : UI_Base{
     }
     private void Function_ReturnButton()
     {
+        if(pc._stopMoving)
+            pc._stopMoving = false;
+            
         gameObject.SetActive(false);
     }
     private void Function_EscapeButton(){

@@ -13,12 +13,15 @@ public class UI_TopNavigation : UI_Scene{
     Button invenButton;
     Button statusButton;
     Button skillButton;
+    
+    Button setupButton;
 
     Button questButton; //todo
 
     GameObject invenUI;
     GameObject statusUI;
     GameObject skillUI;
+    GameObject menuUI;
 
     Text goldText;
     Text timeText;
@@ -39,10 +42,15 @@ public class UI_TopNavigation : UI_Scene{
         invenUI =  Util.FindGameSceneChild("UI_Inven",true);
         statusUI =  Util.FindGameSceneChild("UI_Status",true);
         skillUI =  Util.FindGameSceneChild("UI_SkillList",true);
+        menuUI = Util.FindGameSceneChild("UI_Menu",true);
 
         goldText = transform.GetChild(2).GetComponentInChildren<Text>();
         timeText = transform.GetChild(4).GetComponent<Text>();
+
         
+        setupButton = transform.GetChild(5).GetComponent<Button>();
+        
+
         SetFunction_UI();
     }
 
@@ -51,6 +59,7 @@ public class UI_TopNavigation : UI_Scene{
         invenButton.onClick.AddListener(Function_InvenButton);
         statusButton.onClick.AddListener(Function_StatusButton);
         skillButton.onClick.AddListener(Function_SkillButton);
+        setupButton.onClick.AddListener(Function_SetupButton);
     }
 
     private void Update() {
@@ -91,4 +100,16 @@ public class UI_TopNavigation : UI_Scene{
             skillUI.SetActive(true);
         }
     }
+
+    private void Function_SetupButton(){
+        if(menuUI.activeSelf == true){
+            pc._stopMoving = false;
+            menuUI.SetActive(false);
+        }else{
+            menuUI.transform.SetAsLastSibling();
+            pc._stopMoving = true;
+            menuUI.SetActive(true);
+        }
+    }
 }
+

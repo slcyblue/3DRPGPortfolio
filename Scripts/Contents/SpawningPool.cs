@@ -10,7 +10,7 @@ public class SpawningPool : MonoBehaviour
     [SerializeField]
     int _reserveCount = 0;
     [SerializeField]
-    int _MaxMonsterCount = 20;
+    int _MaxMonsterCount = 10;
     [SerializeField]
     int level = 1;
 
@@ -22,7 +22,7 @@ public class SpawningPool : MonoBehaviour
     [SerializeField]
     float _spawnRadius = 15.0f;
     [SerializeField]
-    float _spawnTime = 10.0f;
+    float _spawnTime = 5.0f;
     Animator animator;
 
     public void AddMonsterCount(int value) { _monsterCount += value; }
@@ -56,7 +56,7 @@ public class SpawningPool : MonoBehaviour
                         bossDoor.GetComponent<Animator>().Play("DoorOpen");
                         break;
                     }        
-                    _MaxMonsterCount = 20;
+                    _MaxMonsterCount = 10;
                     StartCoroutine(ReserveSpawn(level));
                 }
             }

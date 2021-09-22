@@ -42,11 +42,6 @@ public class UI_SkillList : UI_Base
             Skills.Add(_slist);
         }
     }
-    //아이템 목록 새로고침
-    public void RefreshUI(){
-        //productList.Sort((left, right) => { return left.itemSlot - right.itemSlot; });
-
-    }
     
     public void OnClickQuit(){
         player._stopMoving = false;

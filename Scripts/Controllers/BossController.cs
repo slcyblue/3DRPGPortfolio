@@ -82,13 +82,14 @@ public class BossController : BaseController
 				}else{
 					_lockTarget = null;
 					State = Define.State.Idle;
+					_startEngage = false;
 				}
 			}
 		}
 
 		// 이동
 		Vector3 dir = _destPos - transform.position;
-		if (dir.magnitude < 0.1f)
+		if (dir.magnitude < 0.3f)
 		{
 			State = Define.State.Idle;
 		}
@@ -132,13 +133,13 @@ public class BossController : BaseController
 			
 		switch(randSkill){
 			case 0:
-				animator.CrossFade("SKILL1",0.1f,1);
+				animator.CrossFade("SKILL1",0.1f);
 				break;
 			case 1:
-				animator.CrossFade("SKILL2",0.1f,1);
+				animator.CrossFade("SKILL2",0.1f);
 				break;
 			case 2:
-				animator.CrossFade("SKILL3",0.1f,1);
+				animator.CrossFade("SKILL3",0.1f);
 				break;
 		}
 		usedSkill.Push(randSkill);
@@ -226,7 +227,7 @@ public class BossController : BaseController
 			fillRange.transform.position = randPos;
 
 			StartCoroutine(Skill1FillRange(startTime,skillReadyTime,circleRange,fillRange));
-			
+
 			yield return new WaitForSeconds(0.5f);
 		}
 	}
